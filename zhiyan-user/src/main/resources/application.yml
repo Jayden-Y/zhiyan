@@ -1,0 +1,19 @@
+server:
+  port: 6011
+spring:
+  application:
+    name: zy_user
+  datasource:
+    druid:
+      url: ${MYSQL_URL:jdbc:mysql://192.168.142.143:33306/zy_user?characterEncoding=utf-8}
+      username: root
+      password: 123456
+      driverClassName: com.mysql.jdbc.Driver
+      initialSize: 5
+      minIdle: 5  #最小连接数量
+      maxActive: 20 #最大连接数量
+      maxWait: 10000
+      testOnBorrow: true
+      testOnReturn: false
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
