@@ -27,17 +27,19 @@
     <properties>
         <java.version>1.8</java.version>
         <lombok.version>1.16.16</lombok.version>
-        <!--数据库相关-->
         <mybatis-spring-boot.version>1.3.1</mybatis-spring-boot.version>
         <mybatis.version>3.4.5</mybatis.version>
         <druid.version>1.1.6</druid.version>
         <mapper-starter.version>2.0.2</mapper-starter.version>
         <mysql-connector-java.version>5.1.45</mysql-connector-java.version>
         <druid-starter.version>1.1.10</druid-starter.version>
+        <springfox-swagger.version>2.7.0</springfox-swagger.version>
+        <spring-boot-redis.version>1.5.18.RELEASE</spring-boot-redis.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!--数据库相关-->
             <!-- mybatis启动器 -->
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
@@ -66,7 +68,23 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector-java.version}</version>
             </dependency>
-
+            <!--swagger-->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox-swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${springfox-swagger.version}</version>
+            </dependency>
+            <!--redis-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${spring-boot-redis.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

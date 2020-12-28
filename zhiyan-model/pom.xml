@@ -21,6 +21,11 @@
             <artifactId>hibernate-core</artifactId>
             <version>5.0.12.Final</version>
         </dependency>
+        <!--swagger-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+        </dependency>
 
     </dependencies>
 

@@ -1,5 +1,7 @@
 package com.zhiyan.user.service;
 
+import com.zhiyan.common.model.response.BaseResponseResult;
+import com.zhiyan.common.model.response.ResponseResult;
 import com.zhiyan.model.user.ext.UserExt;
 
 /**
@@ -17,8 +19,15 @@ public interface UserService {
      * @param datatype
      * @return com.zhiyan.model.response.BaseResponseResult<java.lang.Boolean>
      */
-    public Boolean dataCheck(String data, Integer datatype);
+    public BaseResponseResult<Boolean> dataCheck(String data, int datatype);
 
+
+    /**
+     * 发送验证码，并将验证码存入redis
+     * @param phone
+     * @return java.lang.Boolean
+     */
+    public ResponseResult sendVerificatonCode(String phone);
 
     /**
      * 根据用户账号查询用户信息

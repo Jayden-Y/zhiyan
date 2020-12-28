@@ -17,3 +17,16 @@ spring:
       testOnReturn: false
       timeBetweenEvictionRunsMillis: 60000
       minEvictableIdleTimeMillis: 300000
+  redis:
+      host: 192.168.142.143
+      port: 6379
+  rabbitmq:
+      host: 192.168.142.143
+      port: 5672
+      username: guest
+      password: guest
+      virtualHost: /
+  profiles:
+    active: dev
+
+
