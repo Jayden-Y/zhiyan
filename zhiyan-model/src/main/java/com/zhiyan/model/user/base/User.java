@@ -1,44 +1,51 @@
 package com.zhiyan.model.user.base;
 
+import com.zhiyan.model.config.UUIdGenId;
 import lombok.Data;
 import lombok.ToString;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Length;
+import tk.mybatis.mapper.annotation.KeySql;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
  * 用户
+ *
  * @author Jayden
  * @description TODO
  **/
 
+
+@Entity
 @Data
 @ToString
-@Entity
-@Table(name="zy_user")
-@GenericGenerator(name = "jpa-uuid", strategy = "uuid")
+@Table(name = "zy_user")
 public class User {
 
     @Id
-    @GeneratedValue(generator = "jpa-uuid")
-    @Column(length = 32)
+    @KeySql(genId = UUIdGenId.class)//自定义
     private String id;
+
+    @Length(min = 6, max = 30, message = "用户名长度在6-30位之间")
     private String username;
+
+    @Length(min = 6, max = 30, message = "用户名长度在6-30位之间")
     private String password;
 
     private String name;
-    @Column(name = "data_type")
-    private String dataType;//注册校验时使用，区分数据类型
     private String type;//角色类型，0超级管理员，1管理员，2教学管理员，3教师，4学生
     private String birthday;
     private String userpic;//头像
     private String sex;
     private String email;
+
+    @Pattern(regexp = "^1[356789]\\d{9}$", message = "手机号格式不正确")//使用正则表达式
     private String phone;
     private String status;//状态
-    @Column(name="create_time")
+    @Column(name = "create_time")
     private Date createTime;
-    @Column(name="update_time")
+    @Column(name = "update_time")
     private Date updateTime;
 }

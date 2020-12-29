@@ -14,6 +14,7 @@
         <module>zhiyan-common</module>
         <module>zhiyan-model</module>
         <module>zhiyan-api</module>
+        <module>zhiyan-utils</module>
     </modules>
 
 
@@ -35,7 +36,11 @@
         <druid-starter.version>1.1.10</druid-starter.version>
         <springfox-swagger.version>2.7.0</springfox-swagger.version>
         <spring-boot-redis.version>1.5.18.RELEASE</spring-boot-redis.version>
+        <guava.version>24.0-jre</guava.version>
+        <commons-lang3.version>3.6</commons-lang3.version>
+        <spring-security-crypto.vension>4.2.3.RELEASE</spring-security-crypto.vension>
     </properties>
+
 
     <dependencyManagement>
         <dependencies>
@@ -85,7 +90,24 @@
                 <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${spring-boot-redis.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-crypto</artifactId>
+                <version>${spring-security-crypto.vension}</version>
+            </dependency>
         </dependencies>
+
     </dependencyManagement>
 
 </project>

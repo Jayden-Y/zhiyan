@@ -2,6 +2,7 @@ package com.zhiyan.user.service;
 
 import com.zhiyan.common.model.response.BaseResponseResult;
 import com.zhiyan.common.model.response.ResponseResult;
+import com.zhiyan.model.user.base.User;
 import com.zhiyan.model.user.ext.UserExt;
 
 /**
@@ -28,6 +29,13 @@ public interface UserService {
      * @return java.lang.Boolean
      */
     public ResponseResult sendVerificatonCode(String phone);
+
+    /**
+     * 用户注册功能
+     * @param user
+     * @param code
+     */
+    public ResponseResult register(User user, String code);
 
     /**
      * 根据用户账号查询用户信息

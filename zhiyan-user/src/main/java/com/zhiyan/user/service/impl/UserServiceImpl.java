@@ -1,20 +1,25 @@
 package com.zhiyan.user.service.impl;
 
+import com.zhiyan.common.exception.ExceptionCast;
 import com.zhiyan.common.model.response.BaseResponseResult;
 import com.zhiyan.common.model.response.CommonCode;
 import com.zhiyan.common.model.response.ResponseResult;
-import com.zhiyan.common.utils.NumberUtils;
+import com.zhiyan.utils.NumberUtils;
 import com.zhiyan.model.user.base.User;
 import com.zhiyan.model.user.ext.UserExt;
 import com.zhiyan.model.user.response.UserCode;
 import com.zhiyan.user.dao.UserMapper;
 import com.zhiyan.user.service.UserService;
+import com.zhiyan.utils.BCryptUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.annotation.KeySql;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +40,7 @@ public class UserServiceImpl implements UserService {
     AmqpTemplate amqpTemplate;
 
     @Autowired
-    RedisTemplate redisTemplate;
+    StringRedisTemplate redisTemplate;
 
     //设置前缀，区分不同业务的短信验证码
     private static final String KEY_PREFIX = "user_verificaton_code:";
@@ -51,13 +56,15 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
 
+        //根据用户名
         if (type == 1) {
             user.setUsername(data);
         } else if (type == 2) {
+            //根据手机号
             user.setPhone(data);
         } else {
             log.error("输入的数据类型错误：{}", type);
-            return new BaseResponseResult(UserCode.USER_TYPE_ERROR, false);
+            ExceptionCast.cast(UserCode.USER_TYPE_ERROR);
         }
 
         try {
@@ -67,6 +74,7 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
 
             log.error("数据库查找用户失败");
+            ExceptionCast.cast(CommonCode.DATABASE_LOOKUP_FAIL);
         }
 
         return new BaseResponseResult(CommonCode.FAIL, false);
@@ -76,7 +84,6 @@ public class UserServiceImpl implements UserService {
      * 发送验证码
      *
      * @param phone
-     * @return java.lang.Boolean
      */
     @Override
     public ResponseResult sendVerificatonCode(String phone) {
@@ -96,15 +103,63 @@ public class UserServiceImpl implements UserService {
             //2.1 将手机号和验证码组成的集合放入到rabbitmq队列中
             amqpTemplate.convertAndSend("zhiyan.sms.exchange", "verifycode.sms", msg);
 
-            //2.2 将验证码和手机号存入redis,设置5分钟过期
-            redisTemplate.opsForValue().set(KEY_PREFIX + phone, code, 2, TimeUnit.MINUTES);
-
-            return ResponseResult.SUCCESS();
+            //2.2 将验证码和手机号存入redis,测试设置6分钟过期
+            redisTemplate.opsForValue().set(KEY_PREFIX + phone, code, 6, TimeUnit.MINUTES);
+            System.out.println(code);
         } catch (Exception e) {
             log.error("短信发送失败[ phone：{}， code：{}]", phone, code);
-            return new ResponseResult(UserCode.USER_SMS_FAIL);
+            ExceptionCast.cast(UserCode.USER_SMS_FAIL);
         }
+        return ResponseResult.SUCCESS();
     }
+
+    /**
+     * 用户注册
+     *
+     * @param user
+     * @param code
+     * @return com.zhiyan.common.model.response.ResponseResult
+     */
+    public ResponseResult register(User user, String code) {
+
+        //1.获取redis中验证码
+        String redisCode = redisTemplate.opsForValue().get(KEY_PREFIX + user.getPhone());
+
+        //2.校验验证码
+        if (!StringUtils.equals(code, redisCode)) {
+
+            ExceptionCast.cast(UserCode.USER_VERIFYCODE_ERROR);
+        }
+
+        //3.密码加密
+        String encode = BCryptUtil.encode(user.getPassword());
+        user.setPassword(encode);
+
+        //4.可防止恶意注入
+        user.setId(null);
+
+        user.setCreateTime(new Date());
+
+        //5.将用户信息添加到数据库
+        Boolean flag = null;
+        try {
+            flag = this.userMapper.insertSelective(user) == 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("数据库添加用户或查询失败：{}",flag);
+            ExceptionCast.cast(CommonCode.DATABASE_OPERATION_FAIL);
+        }
+        if (flag) {
+            try {
+                // 注册成功，删除redis中的记录
+                redisTemplate.delete(KEY_PREFIX + user.getPhone());
+            } catch (Exception e) {
+                log.error("redis删除验证码错误");
+            }
+        }
+        return ResponseResult.SUCCESS();
+    }
+
 
     /**
      * 查询用户信息

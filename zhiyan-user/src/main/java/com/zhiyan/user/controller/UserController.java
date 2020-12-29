@@ -3,10 +3,13 @@ package com.zhiyan.user.controller;
 import com.zhiyan.api.user.UserControllerApi;
 import com.zhiyan.common.model.response.BaseResponseResult;
 import com.zhiyan.common.model.response.ResponseResult;
+import com.zhiyan.model.user.base.User;
 import com.zhiyan.model.user.ext.UserExt;
 import com.zhiyan.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * 用户注册及信息查询
@@ -33,7 +36,6 @@ public class UserController implements UserControllerApi {
 
     /**
      * 发送验证码
-     *
      * @param username
      * @return com.zhiyan.model.user.ext.UserExt
      */
@@ -43,6 +45,17 @@ public class UserController implements UserControllerApi {
         return userService.sendVerificatonCode(phone);
     }
 
+    /**
+     * 用户注册
+     * @param user 使用校验
+     * @param code
+     * @return com.zhiyan.common.model.response.ResponseResult
+     */
+    @PostMapping("/register")
+    public ResponseResult register(@Valid User user, @RequestParam("code") String code) {
+
+        return userService.register(user, code);
+    }
     /**
      * 根据用户账号查询用户信息
      *
