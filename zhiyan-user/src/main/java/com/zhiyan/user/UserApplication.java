@@ -1,9 +1,11 @@
 package com.zhiyan.user;
 
 
+import com.zhiyan.model.config.UUIdGenId;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import tk.mybatis.spring.annotation.MapperScan;
 
@@ -18,4 +20,8 @@ public class UserApplication {
         SpringApplication.run(UserApplication.class, args);
     }
 
+    @Bean
+    public UUIdGenId getUUIdGenId() {
+        return new UUIdGenId();
+    }
 }

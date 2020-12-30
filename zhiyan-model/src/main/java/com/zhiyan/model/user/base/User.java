@@ -16,8 +16,6 @@ import java.util.Date;
  * @author Jayden
  * @description TODO
  **/
-
-
 @Entity
 @Data
 @ToString
@@ -26,6 +24,7 @@ public class User {
 
     @Id
     @KeySql(genId = UUIdGenId.class)//自定义
+    @Column(length = 32)
     private String id;
 
     @Length(min = 6, max = 30, message = "用户名长度在6-30位之间")

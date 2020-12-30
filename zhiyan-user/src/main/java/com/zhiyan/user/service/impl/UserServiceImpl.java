@@ -4,20 +4,19 @@ import com.zhiyan.common.exception.ExceptionCast;
 import com.zhiyan.common.model.response.BaseResponseResult;
 import com.zhiyan.common.model.response.CommonCode;
 import com.zhiyan.common.model.response.ResponseResult;
-import com.zhiyan.utils.NumberUtils;
 import com.zhiyan.model.user.base.User;
 import com.zhiyan.model.user.ext.UserExt;
 import com.zhiyan.model.user.response.UserCode;
 import com.zhiyan.user.dao.UserMapper;
 import com.zhiyan.user.service.UserService;
 import com.zhiyan.utils.BCryptUtil;
+import com.zhiyan.utils.NumberUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import tk.mybatis.mapper.annotation.KeySql;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -143,11 +142,11 @@ public class UserServiceImpl implements UserService {
         //5.将用户信息添加到数据库
         Boolean flag = null;
         try {
-            flag = this.userMapper.insertSelective(user) == 1;
+            flag = userMapper.insertSelective(user) == 1;
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("数据库添加用户或查询失败：{}",flag);
-            ExceptionCast.cast(CommonCode.DATABASE_OPERATION_FAIL);
+            log.error("数据库添加用户失败：{}", user);
+            ExceptionCast.cast(CommonCode.DATABASE_ADD_FAIL);
         }
         if (flag) {
             try {
@@ -155,19 +154,88 @@ public class UserServiceImpl implements UserService {
                 redisTemplate.delete(KEY_PREFIX + user.getPhone());
             } catch (Exception e) {
                 log.error("redis删除验证码错误");
+                ExceptionCast.cast(CommonCode.REDIS_DELETE_FAIL);
             }
         }
         return ResponseResult.SUCCESS();
     }
 
+    /**
+     * 修改用户信息
+     *
+     * @param user
+     * @return com.zhiyan.common.model.response.ResponseResult
+     */
+    @Override
+    public ResponseResult update(User user) {
+
+        if (user == null) {
+            ExceptionCast.cast(UserCode.USER_INFO_NONE);
+        }
+
+        try {
+            //根根主键更新
+            userMapper.updateByPrimaryKeySelective(user);
+        } catch (Exception e) {
+            log.error("数据库更新数据失败：{}", user);
+            ExceptionCast.cast(CommonCode.DATABASE_UPDATE_FAIL);
+        }
+
+        return ResponseResult.SUCCESS();
+    }
 
     /**
-     * 查询用户信息
+     * 删除用户
      *
-     * @param username
+     * @return com.zhiyan.common.model.response.ResponseResult
+     */
+    @Override
+    public ResponseResult delete(String id) {
+        if (id == null) {
+            ExceptionCast.cast(CommonCode.PARMA_NONE);
+        }
+
+        try {
+            //1.根据主键删除
+            userMapper.deleteByPrimaryKey(id);
+            //2.再删除用户-角色中间表
+            userMapper.deleteUserRoleByID(id);
+        } catch (Exception e) {
+            log.error("删除用户失败：{}", id);
+            ExceptionCast.cast(CommonCode.DATABASE_DELETE_FAIL);
+        }
+        return ResponseResult.SUCCESS();
+    }
+
+    /**
+     * 根据手机号查询用户信息
+     *
+     * @param phone
+     * @return com.zhiyan.model.user.base.User
+     */
+    @Override
+    public User getUser(String phone) {
+        User one = new User();
+        one.setPhone(phone);
+
+        User user = null;
+        try {
+            user = userMapper.selectOne(one);
+        } catch (Exception e) {
+            log.error("手机号查询用户信息失败：{}", one);
+            ExceptionCast.cast(CommonCode.DATABASE_LOOKUP_FAIL);
+        }
+        return user;
+    }
+
+
+    /**
+     * 查询手机号查询用户扩展信息
+     *
+     * @param phone
      * @return com.zhiyan.model.user.ext.UserExt
      */
-    public UserExt getUserExt(String username) {
+    public UserExt getUserExt(String phone) {
         return null;
     }
 

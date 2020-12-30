@@ -38,9 +38,29 @@ public interface UserService {
     public ResponseResult register(User user, String code);
 
     /**
-     * 根据用户账号查询用户信息
+     * 修改用户信息
+     * @param user
+     * @return com.zhiyan.common.model.response.ResponseResult
+     */
+    public ResponseResult update(User user);
+
+    /**
+     * 删除用户
+     * @param user
+     * @return com.zhiyan.common.model.response.ResponseResult
+     */
+    public ResponseResult delete(String id);
+
+    /**
+     * 根据手机号查询用户信息
+     * @param phone
+     * @return com.zhiyan.model.user.base.User
+     */
+    public User getUser(String phone);
+    /**
+     * 根据用户账号查询用户扩展信息
      * @param username
      * @return com.zhiyan.model.user.ext.UserExt
      */
-    public UserExt getUserExt(String username);
+    public UserExt getUserExt(String phone);
 }

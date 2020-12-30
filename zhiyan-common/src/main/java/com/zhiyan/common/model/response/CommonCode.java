@@ -14,7 +14,11 @@ public enum CommonCode implements ResultCode {
     DATABASE_LOOKUP_FAIL(false, 10003, "数据库查找失败！"),
     DATABASE_ADD_FAIL(false, 10004, "数据库添加失败！"),
     DATABASE_OPERATION_FAIL(false, 10005, "数据库操作失败！"),
-    SERVER_ERROR(false,99999,"抱歉，系统繁忙，请稍后重试！");;
+    DATABASE_UPDATE_FAIL(false, 10006, "数据库更新数据失败！"),
+    DATABASE_DELETE_FAIL(false, 10007, "数据库删除数据失败！"),
+    REDIS_DELETE_FAIL(false, 10008, "Redis删除数据失败！"),
+    PARMA_NONE(false, 10009, "参数为空！"),
+    SERVER_ERROR(false,99999,"抱歉，系统繁忙，请稍后重试！");
 
     //操作是否成功
     boolean success;
