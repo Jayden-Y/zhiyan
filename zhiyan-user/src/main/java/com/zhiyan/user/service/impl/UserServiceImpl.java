@@ -4,13 +4,14 @@ import com.zhiyan.common.exception.ExceptionCast;
 import com.zhiyan.common.model.response.BaseResponseResult;
 import com.zhiyan.common.model.response.CommonCode;
 import com.zhiyan.common.model.response.ResponseResult;
+import com.zhiyan.common.utils.IdWorker;
 import com.zhiyan.model.user.base.User;
 import com.zhiyan.model.user.ext.UserExt;
 import com.zhiyan.model.user.response.UserCode;
 import com.zhiyan.user.dao.UserMapper;
 import com.zhiyan.user.service.UserService;
-import com.zhiyan.utils.BCryptUtil;
-import com.zhiyan.utils.NumberUtils;
+import com.zhiyan.common.utils.BCryptUtil;
+import com.zhiyan.common.utils.NumberUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -40,6 +41,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Autowired
+    IdWorker idWorker;
 
     //设置前缀，区分不同业务的短信验证码
     private static final String KEY_PREFIX = "user_verificaton_code:";
@@ -135,9 +139,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encode);
 
         //4.可防止恶意注入
-        user.setId(null);
-
+        user.setId(idWorker.nextId()+"");
+        user.setStatus("1");
         user.setCreateTime(new Date());
+        user.setType("10000");
 
         //5.将用户信息添加到数据库
         Boolean flag = null;
@@ -172,7 +177,8 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             ExceptionCast.cast(UserCode.USER_INFO_NONE);
         }
-
+        user.setStatus("1");
+        user.setUpdateTime(new Date());
         try {
             //根根主键更新
             userMapper.updateByPrimaryKeySelective(user);

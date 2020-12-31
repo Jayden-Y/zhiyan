@@ -1,12 +1,13 @@
 package com.zhiyan.model.user.base;
 
-import com.zhiyan.model.config.UUIdGenId;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
-import tk.mybatis.mapper.annotation.KeySql;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 
@@ -23,7 +24,6 @@ import java.util.Date;
 public class User {
 
     @Id
-    @KeySql(genId = UUIdGenId.class)//自定义
     @Column(length = 32)
     private String id;
 

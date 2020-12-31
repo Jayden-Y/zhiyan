@@ -57,7 +57,7 @@ public class UserController implements UserControllerApi {
      * @return com.zhiyan.common.model.response.ResponseResult
      */
     @PostMapping("/register")
-    public ResponseResult register(@Valid User user, @RequestParam("code") String code) {
+    public ResponseResult register(@Valid @RequestBody User user, @RequestParam("code") String code) {
 
         return userService.register(user, code);
     }

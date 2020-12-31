@@ -1,7 +1,7 @@
 package com.zhiyan.user;
 
 
-import com.zhiyan.model.config.UUIdGenId;
+import com.zhiyan.common.utils.IdWorker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -21,7 +21,7 @@ public class UserApplication {
     }
 
     @Bean
-    public UUIdGenId getUUIdGenId() {
-        return new UUIdGenId();
+    public IdWorker idWorker() {
+        return new IdWorker();
     }
 }

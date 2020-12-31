@@ -14,7 +14,6 @@
         <module>zhiyan-common</module>
         <module>zhiyan-model</module>
         <module>zhiyan-api</module>
-        <module>zhiyan-utils</module>
     </modules>
 
 
